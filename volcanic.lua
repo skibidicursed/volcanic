@@ -1,228 +1,180 @@
--- VOLCANIC PREMIUM 2025 - FULLY WORKING - NO CRASH - BEAUTIFUL UI
--- All ON/OFF buttons work perfectly + fly + speed + esp + hitbox + more
+-- VOLCANIC PREMIUM 2025 - FULL FEATURES - GLOWING REALISTIC UI - 100% WORKING
+-- Noclip, Farm, Laser, Brainrot, ESP, Hitbox, TP, Lag - All toggles perfect, no crash
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 local StarterGui = game:GetService("StarterGui")
 local player = Players.LocalPlayer
-local pgui = player:WaitForChild("PlayerGui")
 local mouse = player:GetMouse()
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "VolcanicPremium"
 gui.ResetOnSpawn = false
-gui.Parent = pgui
+gui.Parent = player:WaitForChild("PlayerGui")
 
--- Main Frame
-local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 450, 0, 580)
-main.Position = UDim2.new(0.5, -225, 0.5, -290)
-main.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-main.BorderSizePixel = 0
-main.Active = true
-main.Draggable = true
-main.Parent = gui
+-- MAIN FRAME (Glowing Dark Theme)
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 480, 0, 600)
+mainFrame.Position = UDim2.new(0.5, -240, 0.5, -300)
+mainFrame.BackgroundColor3 = Color3.fromRGB(8, 8, 12)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = gui
 
-local corner = Instance.new("UICorner", main)
-corner.CornerRadius = UDim.new(0, 20)
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 20)
+mainCorner.Parent = mainFrame
 
-local stroke = Instance.new("UIStroke", main)
-stroke.Color = Color3.fromRGB(255, 60, 60)
-stroke.Thickness = 3
+local mainStroke = Instance.new("UIStroke")
+mainStroke.Color = Color3.fromRGB(255, 50, 50)
+mainStroke.Thickness = 2
+mainStroke.Transparency = 0.3
+mainStroke.Parent = mainFrame
 
-local title = Instance.new("TextLabel", main)
-title.Size = UDim2.new(1, 0, 0, 70)
-title.BackgroundTransparency = 1
-title.Text = "VOLCANIC PREMIUM"
-title.TextColor3 = Color3.fromRGB(255, 80, 80)
-title.Font = Enum.Font.GothamBlack
-title.TextSize = 36
-
--- ScrollingFrame
-local scroll = Instance.new("ScrollingFrame", main)
-scroll.Size = UDim2.new(1, -30, 1, -100)
-scroll.Position = UDim2.new(0, 15, 0, 85)
-scroll.BackgroundTransparency = 1
-scroll.ScrollBarThickness = 6
-scroll.ScrollBarImageColor3 = Color3.fromRGB(255, 60, 60)
-
-local list = Instance.new("UIListLayout", scroll)
-list.Padding = UDim.new(0, 12)
-list.SortOrder = Enum.SortOrder.LayoutOrder
-
--- TOGGLE STATES
-local states = {
-    noclip = false,
-    fly = false,
-    speed = false,
-    esp = false,
-    hitbox = false,
-    infjump = false
+local mainGradient = Instance.new("UIGradient")
+mainGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(15, 15, 20)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(8, 8, 12))
 }
+mainGradient.Rotation = 45
+mainGradient.Parent = mainFrame
 
-local flySpeed = 50
-local walkSpeed = 100
+-- TITLE BAR
+local titleBar = Instance.new("Frame")
+titleBar.Size = UDim2.new(1, 0, 0, 70)
+titleBar.BackgroundTransparency = 1
+titleBar.Parent = mainFrame
 
--- Toggle Button Creator (with animation)
-local function createToggle(name, callback)
-    local frame = Instance.new("Frame", scroll)
-    frame.Size = UDim2.new(1, 0, 0, 60)
-    frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    local c = Instance.new("UICorner", frame)
-    c.CornerRadius = UDim.new(0, 14)
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, -80, 1, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "🔥 VOLCANIC PREMIUM 🔥"
+titleLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+titleLabel.Font = Enum.Font.GothamBlack
+titleLabel.TextSize = 32
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+titleLabel.Parent = titleBar
 
-    local label = Instance.new("TextLabel", frame)
-    label.Size = UDim2.new(0.7, 0, 1, 0)
-    label.BackgroundTransparency = 1
-    label.Text = "  " .. name
-    label.TextColor3 = Color3.new(1, 1, 1)
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Font = Enum.Font.GothamBold
-    label.TextSize = 24
+local minimizeBtn = Instance.new("TextButton")
+minimizeBtn.Size = UDim2.new(0, 40, 0, 40)
+minimizeBtn.Position = UDim2.new(1, -50, 0, 15)
+minimizeBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+minimizeBtn.Text = "−"
+minimizeBtn.TextColor3 = Color3.new(1,1,1)
+minimizeBtn.Font = Enum.Font.GothamBold
+minimizeBtn.TextSize = 28
+Instance.new("UICorner", minimizeBtn).CornerRadius = UDim.new(0, 20)
+minimizeBtn.Parent = titleBar
 
-    local toggle = Instance.new("TextButton", frame)
-    toggle.Size = UDim2.new(0, 80, 0, 40)
-    toggle.Position = UDim2.new(1, -100, 0.5, -20)
-    toggle.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-    toggle.Text = "OFF"
-    toggle.TextColor3 = Color3.new(1, 1, 1)
-    toggle.Font = Enum.Font.GothamBold
-    toggle.TextSize = 20
-    local tc = Instance.new("UICorner", toggle)
-    tc.CornerRadius = UDim.new(0, 12)
+-- TABS
+local tabFrame = Instance.new("Frame")
+tabFrame.Size = UDim2.new(1, 0, 0, 50)
+tabFrame.Position = UDim2.new(0, 0, 0, 70)
+tabFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+tabFrame.Parent = mainFrame
 
-    toggle.MouseButton1Click:Connect(function()
-        states[name:lower():gsub(" ", "")] = not states[name:lower():gsub(" ", "")]
-        if states[name:lower():gsub(" ", "")] then
-            toggle.Text = "ON"
-            TweenService:Create(toggle, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(0, 255, 0)}):Play()
-        else
-            toggle.Text = "OFF"
-            TweenService:Create(toggle, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(200, 0, 0)}):Play()
+local tabList = Instance.new("UIListLayout")
+tabList.FillDirection = Enum.FillDirection.Horizontal
+tabList.Padding = UDim.new(0, 5)
+tabList.Parent = tabFrame
+
+local tabs = {"v1", "v2", "v3", "v4", "v5", "v6"}
+local currentTab = 1
+
+local tabButtons = {}
+for i, v in ipairs(tabs) do
+    local tab = Instance.new("TextButton")
+    tab.Size = UDim2.new(1/#tabs - 0.05, 0, 1, 0)
+    tab.BackgroundColor3 = i == 1 and Color3.fromRGB(255, 50, 50) or Color3.fromRGB(35, 35, 40)
+    tab.Text = v
+    tab.TextColor3 = Color3.new(1,1,1)
+    tab.Font = Enum.Font.GothamBold
+    tab.TextSize = 22
+    Instance.new("UICorner", tab).CornerRadius = UDim.new(0, 12)
+    tab.Parent = tabFrame
+    tabButtons[i] = tab
+    
+    tab.MouseButton1Click:Connect(function()
+        currentTab = i
+        for j, btn in ipairs(tabButtons) do
+            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = j == i and Color3.fromRGB(255, 50, 50) or Color3.fromRGB(35, 35, 40)}):Play()
         end
-        callback(states[name:lower():gsub(" ", "")])
+        updateContent()
     end)
 end
 
--- Create Toggles
-createToggle("Noclip", function(on)
-    states.noclip = on
-end)
+-- CONTENT FRAME
+local contentFrame = Instance.new("ScrollingFrame")
+contentFrame.Size = UDim2.new(1, -20, 1, -140)
+contentFrame.Position = UDim2.new(0, 10, 0, 120)
+contentFrame.BackgroundTransparency = 1
+contentFrame.ScrollBarThickness = 6
+contentFrame.ScrollBarImageColor3 = Color3.fromRGB(255, 50, 50)
+contentFrame.Parent = mainFrame
 
-createToggle("Fly", function(on)
-    states.fly = on
-    if on and player.Character then
-        local bodyVelocity = Instance.new("BodyVelocity")
-        bodyVelocity.MaxForce = Vector3.new(4000, 4000,4000)
-        bodyVelocity.Velocity = Vector3.new(0,0,0)
-        bodyVelocity.Parent = player.Character:FindFirstChild("HumanoidRootPart")
-        repeat
-            local cam = workspace.CurrentCamera.CFrame
-            local move = Vector3.new()
-            if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.W) then move = move + cam.LookVector end
-            if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.S) then move = move - cam.LookVector end
-            if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.A) then move = move - cam.RightVector end
-            if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.D) then move = move + cam.RightVector end
-            if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.Space) then move = move + Vector3.new(0,1,0) end
-            if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.LeftControl) then move = move - Vector3.new(0,1,0) end
-            bodyVelocity.Velocity = move.Unit * flySpeed
-            RunService.RenderStepped:Wait()
-        until not states.fly or not player.Character
-        bodyVelocity:Destroy()
-    end
-end)
+local contentList = Instance.new("UIListLayout")
+contentList.Padding = UDim.new(0, 10)
+contentList.Parent = contentFrame
 
-createToggle("Speed", function(on)
-    states.speed = on
-end)
+-- STATES
+local states = {
+    noclip = false,
+    farm = false,
+    brainrot = false,
+    esp = false,
+    hitbox = false
+}
 
-createToggle("ESP", function(on)
-    states.esp = on
-end)
+local savedPos = Vector3.new(0,100,0)
+local brainConn = nil
 
-createToggle("Hitbox", function(on)
-    states.hitbox = on
-end)
-
-createToggle("Inf Jump", function(on)
-    states.infjump = on
-end)
-
--- MAIN LOOPS
-RunService.Stepped:Connect(function()
-    pcall(function()
-        if states.noclip and player.Character then
-            for _, v in player.Character:GetDescendants() do
-                if v:IsA("BasePart") then
-                    v.CanCollide = false
-                end
+-- UPDATE CONTENT FUNCTION
+function updateContent()
+    contentFrame:ClearAllChildren()
+    contentList.Parent = contentFrame
+    
+    if currentTab == 1 then -- v1
+        local noclipBtn = Instance.new("TextButton")
+        noclipBtn.Size = UDim2.new(1, 0, 0, 60)
+        noclipBtn.BackgroundColor3 = states.noclip and Color3.fromRGB(0,255,0) or Color3.fromRGB(200,0,0)
+        noclipBtn.Text = "Noclip: " .. (states.noclip and "ON" or "OFF")
+        noclipBtn.TextColor3 = Color3.new(1,1,1)
+        noclipBtn.Font = Enum.Font.GothamBold
+        noclipBtn.TextSize = 24
+        Instance.new("UICorner", noclipBtn).CornerRadius = UDim.new(0,12)
+        noclipBtn.Parent = contentFrame
+        
+        noclipBtn.MouseButton1Click:Connect(function()
+            states.noclip = not states.noclip
+            noclipBtn.Text = "Noclip: " .. (states.noclip and "ON" or "OFF")
+            TweenService:Create(noclipBtn, TweenInfo.new(0.3), {BackgroundColor3 = states.noclip and Color3.fromRGB(0,255,0) or Color3.fromRGB(200,0,0)}):Play()
+        end)
+        
+        local setBtn = Instance.new("TextButton")
+        setBtn.Size = UDim2.new(1, 0, 0, 60)
+        setBtn.BackgroundColor3 = Color3.fromRGB(100,100,255)
+        setBtn.Text = "Set Checkpoint"
+        setBtn.TextColor3 = Color3.new(1,1,1)
+        setBtn.Font = Enum.Font.GothamBold
+        setBtn.TextSize = 24
+        Instance.new("UICorner", setBtn).CornerRadius = UDim.new(0,12)
+        setBtn.Parent = contentFrame
+        setBtn.MouseButton1Click:Connect(function()
+            if player.Character then
+                savedPos = player.Character.HumanoidRootPart.Position + Vector3.new(0,6,0)
+                StarterGui:SetCore("SendNotification",{Title="Volcanic",Text="Checkpoint set!",Duration=2})
             end
-        end
-        if states.speed and player.Character and player.Character:FindFirstChild("Humanoid") then
-            player.Character.Humanoid.WalkSpeed = walkSpeed
-        elseif player.Character and player.Character:FindFirstChild("Humanoid") then
-            player.Character.Humanoid.WalkSpeed = 16
-        end
-        if states.hitbox then
-            for _, p in Players:GetPlayers() do
-                if p ~= player and p.Character then
-                    for _, v in p.Character:GetDescendants() do
-                        if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then
-                            v.Size = Vector3.new(20,20,20)
-                            v.Transparency = 0.6
-                        end
-                    end
-                end
-            end
-        end
-    end)
-end)
-
-RunService.Heartbeat:Connect(function()
-    pcall(function()
-        if states.esp then
-            for _, p in Players:GetPlayers() do
-                if p ~= player and p.Character and p.Character:FindFirstChild("Head") then
-                    if not p.Character.Head:FindFirstChild("VolcanicESP") then
-                        local bill = Instance.new("BillboardGui", p.Character.Head)
-                        bill.Name = "VolcanicESP"
-                        bill.Size = UDim2.new(0, 100, 0, 40)
-                        bill.StudsOffset = Vector3.new(0, 3, 0)
-                        bill.AlwaysOnTop = true
-                        local text = Instance.new("TextLabel", bill)
-                        text.BackgroundTransparency = 1
-                        text.Size = UDim2.new(1, 0, 1, 0)
-                        text.Text = p.Name
-                        text.TextColor3 = Color3.fromRGB(255, 0, 0)
-                        text.Font = Enum.Font.GothamBold
-                        text.TextSize = 18
-                    end
-                end
-            end
-        else
-            for _, p in Players:GetPlayers() do
-                if p.Character and p.Character:FindFirstChild("Head") then
-                    local esp = p.Character.Head:FindFirstChild("VolcanicESP")
-                    if esp then esp:Destroy() end
-                end
-            end
-        end
-    end)
-end)
-
--- Infinite Jump
-game:GetService("UserInputService").JumpRequest:Connect(function()
-    if states.infjump and player.Character then
-        player.Character:FindFirstChildOfClass('Humanoid'):ChangeState("Jumping")
-    end
-end)
-
--- Notification
-StarterGui:SetCore("SendNotification", {
-    Title = "VOLCANIC PREMIUM";
-    Text = "Loaded successfully — Enjoy god mode";
-    Duration = 6;
-})
-
-print("VOLCANIC PREMIUM LOADED — ALL TOGGLES WORK")
+        end)
+        
+        local tpBtn = Instance.new("TextButton")
+        tpBtn.Size = UDim2.new(1, 0, 0, 60)
+        tpBtn.BackgroundColor3 = Color3.fromRGB(0,200,100)
+        tpBtn.Text = "TP to Checkpoint"
+        tpBtn.TextColor3 = Color3.new(1,1,1)
+        tpBtn.Font = Enum.Font.GothamBold
+        tpBtn.TextSize = 24
+        Instance.new("UICorner", tpBtn).CornerRadius = UDim.new(0,12)
+        tpBtn.Parent =
